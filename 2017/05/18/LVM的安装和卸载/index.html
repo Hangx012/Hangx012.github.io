@@ -10,7 +10,9 @@
 
     <!--Description-->
     
-        <meta name="description" content="一、安装1.创建分区1fdisk /dev/sdb">
+        <meta name="description" content="一、安装1.新建分区管理磁盘分区1[root@hx ~]# fdisk /dev/sdb
+打印当前磁盘上的分区1Command (m for help): p
+新建分区123456789Command (m for help): n Command action   e   extended   p">
     
 
     <!--Author-->
@@ -143,7 +145,34 @@
         
 
         <!-- Post Content -->
-        <h2 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h2><h3 id="1-创建分区"><a href="#1-创建分区" class="headerlink" title="1.创建分区"></a>1.创建分区</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fdisk /dev/sdb</div></pre></td></tr></table></figure>
+        <h2 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h2><h3 id="1-新建分区"><a href="#1-新建分区" class="headerlink" title="1.新建分区"></a>1.新建分区</h3><p>管理磁盘分区<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@hx ~]<span class="comment"># fdisk /dev/sdb</span></div></pre></td></tr></table></figure></p>
+<p>打印当前磁盘上的分区<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): p</div></pre></td></tr></table></figure></p>
+<p>新建分区<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): n </div><div class="line">Command action</div><div class="line">   e   extended</div><div class="line">   p   primary partition (1-4)</div><div class="line">p                                            <span class="comment">#输入p 选择分区类型为主分区</span></div><div class="line">Partition number (1-4): 1                    <span class="comment">#输入1 选择为第一个主分区</span></div><div class="line">First cylinder (1-7832, default 1):          <span class="comment">#直接回车 选择分区起始块为1</span></div><div class="line">Using default value 1</div><div class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (1-7832, default 7832):    <span class="comment">#直接回车默认分配所有大小或者输入+20G分配20G大小</span></div></pre></td></tr></table></figure></p>
+<p>改变分区类型<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): t</div><div class="line">Partition number (1-4): 1                    <span class="comment">#输入1 选择改变分区类型的分区号为1</span></div><div class="line">Hex code (<span class="built_in">type</span> L to list codes): 8e          <span class="comment">#输入8e 改变分区类型为LVM</span></div><div class="line">Changed system <span class="built_in">type</span> of partition 1 to 8e (Linux LVM)</div></pre></td></tr></table></figure></p>
+<p>写入分区表<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): w</div></pre></td></tr></table></figure></p>
+<h3 id="2-将物理分区与硬盘创建为物理卷"><a href="#2-将物理分区与硬盘创建为物理卷" class="headerlink" title="2.将物理分区与硬盘创建为物理卷"></a>2.将物理分区与硬盘创建为物理卷</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pvcreate /dev/sdb1</div></pre></td></tr></table></figure>
+<p>查看pv情况<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pvs</div></pre></td></tr></table></figure></p>
+<h3 id="3-将物理卷-pv-创建为卷组"><a href="#3-将物理卷-pv-创建为卷组" class="headerlink" title="3.将物理卷(pv)创建为卷组"></a>3.将物理卷(pv)创建为卷组</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vgcreate vg_data /dev/sdb1</div></pre></td></tr></table></figure>
+<p>查看lv情况<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vgs</div></pre></td></tr></table></figure></p>
+<h3 id="4-在卷组-vg-里创建逻辑卷"><a href="#4-在卷组-vg-里创建逻辑卷" class="headerlink" title="4.在卷组(vg)里创建逻辑卷"></a>4.在卷组(vg)里创建逻辑卷</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lvcreate -n  utxt -L 100G vg_data            <span class="comment">#在vg_data上创建100G的逻辑卷utxt</span></div></pre></td></tr></table></figure>
+<p>查看vg情况<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lvs</div></pre></td></tr></table></figure></p>
+<h3 id="5-格式化"><a href="#5-格式化" class="headerlink" title="5.格式化"></a>5.格式化</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkfs.ext4 /dev/vg_data/utxt					 <span class="comment">#格式化utxt为ext4格式</span></div></pre></td></tr></table></figure>
+<h3 id="6-编辑开机自动挂载"><a href="#6-编辑开机自动挂载" class="headerlink" title="6.编辑开机自动挂载"></a>6.编辑开机自动挂载</h3><p>先查看UUID                                     #查看后复制UUID<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">blkid</div></pre></td></tr></table></figure></p>
+<p>编辑开机自动挂载<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/fstab</div></pre></td></tr></table></figure></p>
+<p>添加<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">UUID=47fef68f<span class="_">-f</span>361-43c9-9907<span class="_">-e</span>00cbb115521   /utxt  ext4  defaults  0 0</div></pre></td></tr></table></figure></p>
+<h2 id="二、卸载"><a href="#二、卸载" class="headerlink" title="二、卸载"></a>二、卸载</h2><h3 id="1-卸载卷组的逻辑卷LV"><a href="#1-卸载卷组的逻辑卷LV" class="headerlink" title="1.卸载卷组的逻辑卷LV"></a>1.卸载卷组的逻辑卷LV</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">umount /dev/vg_data/utxt</div></pre></td></tr></table></figure>
+<h3 id="2-删除逻辑卷LV"><a href="#2-删除逻辑卷LV" class="headerlink" title="2.删除逻辑卷LV"></a>2.删除逻辑卷LV</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lvremove /dev/vg_data/utxt</div></pre></td></tr></table></figure>
+<h3 id="3-删除卷组VG"><a href="#3-删除卷组VG" class="headerlink" title="3.删除卷组VG"></a>3.删除卷组VG</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vgremove vg_data</div></pre></td></tr></table></figure>
+<p>如果采用安全的方式删除卷组VG，则必须使用vgchange -a n vg_data关闭了vg_data，然后才可以删除它。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vgchange <span class="_">-a</span> n vg_data</div></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vgremove vg_data</div></pre></td></tr></table></figure>
+<ol>
+<li><p>删除物理卷PV</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Pvremove /dev/vg_data</div></pre></td></tr></table></figure>
+</li>
+<li><p>编辑/etc/fstab，删除对应挂载信息<br>删除UUID</p>
+</li>
+<li>查看卷组vg_data中包含的LV，PV信息以确认删除<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Vgdisplay –v vg_data</div></pre></td></tr></table></figure></li>
+</ol>
 
     </div>
 
@@ -188,10 +217,6 @@
     <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
         <h2>Recent Posts</h2>
         <ul>
-            
-            <li>
-                <a class="footer-post" href="/2017/05/18/linux下安装oracle/">linux下安装oracle</a>
-            </li>
             
             <li>
                 <a class="footer-post" href="/2017/05/18/LVM的安装和卸载/">LVM的安装和卸载</a>
